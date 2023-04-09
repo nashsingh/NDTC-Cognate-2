@@ -1,74 +1,97 @@
-#include <SPI.h>
-#include <SD.h>
+#include <Keypad.h>
+#include <Adafruit_LiquidCrystal.h>
 
-File myFile;
+const byte ROWS = 4;
+const byte COLS = 4;
 
-void setup() {
-  Serial.begin(9600);
+char keys [ROWS] [COLS] = {
+  {'1','2','3', '+'},
+  {'4','5','6', '-'},
+  {'7','8','9', '*'},
+  {'C','0','=', '/'}
+};
 
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
+byte rowPins[ROWS] = {9, 8, 7, 6};
+byte colPins[COLS] = {5, 4, 3, 2};
 
-  Serial.print("Initializing SD card...");
+Keypad myKeypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
+Adafruit_LiquidCrystal lcd_1(0);
 
-  if (!SD.begin(53)) {
-    Serial.println("SD card initialization failed!");
-    return;
-  }
+boolean presentValue = false;
+boolean next = false;
+boolean final = false;
+String num1, num2;
+int answer = 0;
+char op;
 
-  Serial.println("SD card initialization done.");
-  Serial.println("Enter 'write <filename>'");
-  Serial.println("Enter 'delete <filename>'");
-  Serial.println("Enter 'read <filename>'");
+
+void setup(){
+    lcd_1.begin(16, 2);
 }
 
-void loop() {
-  // Wait for user input
-  while (!Serial.available());
-  // Read user input
-  String inputString = Serial.readStringUntil('\n');
-  inputString.trim();
+void loop(){
+  char key = myKeypad.getKey();
 
-  if (inputString.startsWith("write")) {
-    // Get file name from user and open file for writing
-    String fileName = inputString.substring(6);
-    myFile = SD.open(fileName, FILE_WRITE);
+  if (key != NO_KEY && (key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6' || key == '7' || key == '8' || key == '9' || key == '0'))
+  {
+    if (presentValue != true)
+    {
+      num1 = num1 + key;
+      int numLength = num1.length();
+      lcd_1.setCursor(0, 0); 
+      lcd_1.print(num1);
+    }
+    else
+    {
+      num2 = num2 + key;
+      int numLength = num2.length();
+      int numLength1 = num1.length();
+      lcd_1.setCursor(1 + numLength1, 0);
+      lcd_1.print(num2);
+      final = true;
+    }
+  }
 
-    if (myFile) {
-      Serial.print("Enter data to write: ");
-      while (!Serial.available());
-      String dataString = Serial.readStringUntil('\n');
-      dataString.trim();
-      myFile.println(dataString);
-      myFile.close();
-      Serial.println("Data written to file.");
-    } else {
-      Serial.println("Error opening file.");
+  else if (presentValue == false && key != NO_KEY && (key == '/' || key == '*' || key == '-' || key == '+'))
+  {
+    if (presentValue == false)
+    {
+      int numLength = num1.length();
+      presentValue = true;
+      op = key;
+      lcd_1.setCursor(0 + numLength, 0);
+      lcd_1.print(op);
     }
-  } else if (inputString.startsWith("read")) {
-    // Get file name from user and open file for reading
-    String fileName = inputString.substring(5);
-    myFile = SD.open(fileName);
+  }
 
-    if (myFile) {
-      // Read data from file and print to serial monitor
-      while (myFile.available()) {
-        Serial.write(myFile.read());
-      }
-      myFile.close();
-    } else {
-      Serial.println("Error opening file.");
+  else if (final == true && key != NO_KEY && key == '=') {
+      
+    if (op == '+') {
+      answer = num1.toInt() + num2.toInt();
     }
-  } else if (inputString.startsWith("delete")) {
-    // Get file name from user and delete the file
-    String fileName = inputString.substring(7);
-    if (SD.remove(fileName)) {
-      Serial.println("File deleted.");
-    } else {
-      Serial.println("Error deleting file.");
+    else if (op == '-') {
+      answer = num1.toInt() - num2.toInt();
     }
-  } else {
-    Serial.println("Invalid input. Enter 'write <filename>' to write data to a file, 'read <filename>' to read data from a file, or 'delete <filename>' to delete a file.");
+    else if (op == '*') {
+      answer = num1.toInt() * num2.toInt();
+    }
+    else if (op == '/') {
+      answer = num1.toInt() / num2.toInt();
+    }
+    lcd_1.clear();
+    lcd_1.setCursor(16, 1);
+    lcd_1.autoscroll();
+    lcd_1.print(answer);
+    lcd_1.noAutoscroll();
+    
+  }
+  else if (key != NO_KEY && key == 'C') {
+    lcd_1.clear();
+    presentValue = false;
+    final = false;
+    num1 = "";
+    num2 = "";
+    answer = 0;
+    op = ' ';
   }
 }
