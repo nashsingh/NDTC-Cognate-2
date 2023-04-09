@@ -1,4 +1,4 @@
-Fairodz Adam Buisan
+
 #include <Keypad.h>
 #include <Adafruit_LiquidCrystal.h>
 
