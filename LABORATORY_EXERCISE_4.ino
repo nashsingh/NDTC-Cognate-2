@@ -1,81 +1,39 @@
+///////FOR Ultrasonic///////
+const int trigPin = 7;
+const int echoPin = 6;
+long duration;
+int distance;
+//////////////////////////
+
+//// For l298n//////
 int in1 = 9;
 int in2 = 8;
 int in3 = 5;
 int in4 = 4;
-const int pingPin = 7; // Trigger Pin of Ultrasonic Sensor
-const int echoPin = 6; // Echo Pin of Ultrasonic Sensor
-long duration;
-int distance;
+
+//////////////////
 void setup() {
-  
-  pinMode (in1, OUTPUT);
+/////////Ultrasonic//////////
+  pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
+  pinMode(echoPin, INPUT); // Sets the echoPin as an Input
+  Serial.begin(9600); // Starts the serial communication
+/////////////////////////////
+
+//////l298n//////
+ pinMode (in1, OUTPUT);
    pinMode (in2, OUTPUT);
     pinMode (in3, OUTPUT);
      pinMode (in4, OUTPUT);
-
-
-  speedControl();
+      speedControl();
   delay(1000);
-   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
-  pinMode(echoPin, INPUT); // Sets the echoPin as an Input
-  Serial.begin(9600); 
-}
+     /////////////
 
-  void speedControl() {
-  // Turn on motors
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, HIGH);
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, HIGH);
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, LOW);
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, LOW);
-  delay(500);
-
- 
-
-   digitalWrite(in1, HIGH);
-  digitalWrite(in2, LOW);
-  digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW);
-  delay(1000);
-
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, HIGH);
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, HIGH);
-  delay(1000);
-
-  digitalWrite(in1, HIGH);
-  digitalWrite(in2, LOW);
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, HIGH);
-  digitalWrite(in1, HIGH);
-  digitalWrite(in2, LOW);
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, HIGH);
-  delay(5000);
-   digitalWrite(in1, LOW);
-  digitalWrite(in2, HIGH);
-  digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW);
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, HIGH);
-  digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW);
-  delay(6000);
-   
-  // Now turn off motors
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, LOW);
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, LOW);
+     
 
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+void ultrasonic(){
+  // Clears the trigPin
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   // Sets the trigPin on HIGH state for 10 micro seconds
@@ -89,10 +47,85 @@ void loop() {
   // Prints the distance on the Serial Monitor
   Serial.print("Distance: ");
   Serial.println(distance);
+  }
 
-long microsecondsToCentimeters(long microseconds) {
-   return microseconds / 29 / 2;
+  void speedControl() {
+  // Turn on motors
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
+  //delay(500);
+  }
+ 
+void forward(){
+    digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+  //delay(500);
+
 }
+ void backward(){
+ digitalWrite(in1, LOW);
+ digitalWrite(in2, HIGH);
+ digitalWrite(in3, LOW);
+ digitalWrite(in4, HIGH);
+ delay(500);
+ 
+ }
+ void right (){
+     digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+  delay(500);
+   digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+  delay(500);
+  }
+
+  void left(){
+      digitalWrite(in1, LOW);
+   digitalWrite(in2, HIGH);
+   digitalWrite(in3, HIGH);
+   digitalWrite(in4, LOW);
+   delay(500);
+    digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+   delay(500);
+  }
+void loop() {
+
+  ultrasonic();
+
+
+  
+if(distance < 15){
+   backward();
 }
-You sent
-diba subong kulang naalala hays
+else{
+   forward();
+}
+
+
+  if (distance =80; distance < 150 ){
+    right();
+    
+  }
+  else {
+    left();
+  }
+
+
+ 
+}
+
